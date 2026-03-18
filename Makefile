@@ -20,6 +20,12 @@ env-cleanup:
           echo "Очистка отменена"; \
         fi
 
+env-port-forward:
+	@docker compose up -d port-forwarder
+
+env-port-close:
+	@docker compose down port-forwarder
+
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
   		echo "Отсутствует нужный парраметр seq."; \
