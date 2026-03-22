@@ -3,6 +3,7 @@ package core_http_middleware
 import (
 	"context"
 	"net/http"
+	"time"
 
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
 	core_http_response "github.com/Kosench/golang-todoapp/internal/core/transport/http/response"
@@ -60,6 +61,29 @@ func Panic() Middleware {
 			}()
 
 			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func Trace() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			log := core_logger.FromContext(ctx)
+			rw := core_http_response.NewResponseWriter(w)
+
+			before := time.Now()
+			log.Debug(">>> incoming HTTP request",
+				zap.Time("time", before.UTC()),
+			)
+
+			next.ServeHTTP(rw, r)
+
+			log.Debug(
+				"<<< done HTTP request",
+				zap.Int("status code", rw.GetStatusCodeOrPanic()),
+				zap.Duration("latency", time.Now().Sub(before)),
+			)
 		})
 	}
 }
