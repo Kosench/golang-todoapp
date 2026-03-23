@@ -54,6 +54,9 @@ migrate-action:
     	"$(action)"
 
 todoapp-run:
-	@go run cmd/todoapp/main.go
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/log && \
+	go mod tidy && \
+	go run cmd/todoapp/main.go
+
 test-target:
 	@echo "value: $(var)"
