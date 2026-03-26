@@ -1,0 +1,22 @@
+package users_service
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/Kosench/golang-todoapp/internal/core/domain"
+)
+
+func (s *UserService) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+	//1. user.validate
+	if err := user.Validate(); err != nil {
+		return domain.User{}, fmt.Errorf("validate user domain: %w", err)
+	}
+
+	createdUser, err := s.usersRepository.CreateUser(ctx, user)
+	if err != nil {
+		return domain.User{}, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return createdUser, nil
+}
