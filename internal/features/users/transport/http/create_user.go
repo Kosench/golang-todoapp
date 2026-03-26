@@ -29,6 +29,7 @@ func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req CreateUserRequest
 	if err := core_http_request.DecodeAndValidator(r, &req); err != nil {
 		responseHandler.ErrorResponse(err, "failed to decode and validate HTTP request")
+		return
 	}
 
 	userDomain := domainFromDTO(req)
