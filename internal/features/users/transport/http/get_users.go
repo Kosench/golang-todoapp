@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
 	core_http_response "github.com/Kosench/golang-todoapp/internal/core/transport/http/response"
 	core_http_utils "github.com/Kosench/golang-todoapp/internal/core/transport/http/utils"
@@ -45,10 +46,16 @@ func getLimitOffsetQueryParams(r *http.Request) (*int, *int, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("get limit query param: %w", err)
 	}
+	if limit != nil && *limit < 0 {
+		return nil, nil, fmt.Errorf("limit must be non-negative: %w", core_errors.ErrInvalidArgument)
+	}
 
 	offset, err := core_http_utils.GetIntQueryParam(r, "offset")
 	if err != nil {
 		return nil, nil, fmt.Errorf("get offset query param: %w", err)
+	}
+	if offset != nil && *offset < 0 {
+		return nil, nil, fmt.Errorf("offset must be non-negative: %w", core_errors.ErrInvalidArgument)
 	}
 
 	return limit, offset, nil

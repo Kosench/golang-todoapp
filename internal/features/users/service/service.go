@@ -20,6 +20,10 @@ type UserRepository interface {
 		limit *int,
 		offset *int,
 	) ([]domain.User, error)
+	GetUser(
+		ctx context.Context,
+		id int,
+	) (domain.User, error)
 }
 
 func NewUserService(repository UserRepository) *UserService {
