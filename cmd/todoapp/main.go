@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
-	core_postgres_poll "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
+	"github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/Kosench/golang-todoapp/internal/core/transport/http/middleware"
 	core_http_server "github.com/Kosench/golang-todoapp/internal/core/transport/http/server"
 	users_postgres_repository "github.com/Kosench/golang-todoapp/internal/features/users/repository/postgres"
@@ -32,7 +32,11 @@ func main() {
 	defer logger.Close()
 
 	logger.Debug("initializing postgres connection pool")
-	pool, err := core_postgres_poll.NewConnectionPool(ctx, core_postgres_poll.NewMustConfig())
+	//pool, err := core_postgres_poll.NewConnectionPool(ctx, core_pgx_pool.NewMustConfig())
+	pool, err := core_pgx_pool.NewPool(
+		ctx,
+		core_pgx_pool.NewMustConfig(),
+	)
 	if err != nil {
 		logger.Fatal("failed to init postgres connection pool %w: ", zap.Error(err))
 	}
@@ -49,8 +53,8 @@ func main() {
 		logger,
 		core_http_middleware.RequestID(),
 		core_http_middleware.Logger(logger),
-		core_http_middleware.Panic(),
 		core_http_middleware.Trace(),
+		core_http_middleware.Panic(),
 	)
 
 	apiVersionRouter := core_http_server.NewVersionAPI(core_http_server.APIVersion1)
