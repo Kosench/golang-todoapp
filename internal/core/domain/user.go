@@ -38,10 +38,10 @@ func NewUserUninitialized(fullName string, phoneNumber *string) User {
 }
 
 func (u User) Validate() error {
-	fullNameLength := len([]rune(u.FullName))
-	if fullNameLength < 3 || fullNameLength > 100 {
+	fullNameLen := len([]rune(u.FullName))
+	if fullNameLen < 3 || fullNameLen > 100 {
 		return fmt.Errorf("invalid `FullName` len: %d: %w",
-			fullNameLength,
+			fullNameLen,
 			core_errors.ErrInvalidArgument,
 		)
 	}
