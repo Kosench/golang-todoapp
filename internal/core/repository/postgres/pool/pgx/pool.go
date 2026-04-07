@@ -30,7 +30,7 @@ func (p *Pool) QueryRow(ctx context.Context, sql string, args ...any) core_postg
 }
 
 func (p *Pool) Exec(ctx context.Context, sql string, arguments ...any) (core_postgres_pool.CommandTag, error) {
-	tag, err := p.Pool.Exec(ctx, sql, arguments)
+	tag, err := p.Pool.Exec(ctx, sql, arguments...)
 	if err != nil {
 		return nil, err
 	}
