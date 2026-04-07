@@ -1,4 +1,4 @@
-package users_transport_http
+package tasks_transport_http
 
 import (
 	"net/http"
@@ -8,25 +8,22 @@ import (
 	core_http_response "github.com/Kosench/golang-todoapp/internal/core/transport/http/response"
 )
 
-func (h *UsersHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (h TasksHTTPHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
-	id, err := core_http_request.GetIntPathValue(r, "id")
+	taskID, err := core_http_request.GetIntPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed do get userID path value",
+			"failed do get taskID path value",
 		)
 		return
 	}
 
-	if err = h.userService.DeleteUser(ctx, id); err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to delete user",
-		)
+	if err = h.tasksService.DeleteTask(ctx, taskID); err != nil {
+		responseHandler.ErrorResponse(err, "failed to delete task")
 		return
 	}
 
