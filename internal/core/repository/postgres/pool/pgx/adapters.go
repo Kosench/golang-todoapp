@@ -35,7 +35,7 @@ func mapErrors(err error) error {
 	)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return fmt.Errorf("%v: %w", err, core_postgres_pool.ErrViolatesForeignKey)
+		return fmt.Errorf("%v: %w", err, core_postgres_pool.ErrNoRows)
 	}
 
 	var pgErr *pgconn.PgError

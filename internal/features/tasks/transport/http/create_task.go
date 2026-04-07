@@ -2,7 +2,6 @@ package tasks_transport_http
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
@@ -16,17 +15,7 @@ type CreateTaskRequest struct {
 	AuthorUserID int     `json:"author_user_id" validate:"required"`
 }
 
-type CreateTaskResponse struct {
-	ID      int `json:"id"`
-	Version int `json:"version"`
-
-	Title        string     `json:"title"`
-	Description  *string    `json:"description"`
-	Completed    bool       `json:"completed"`
-	CreatedAt    time.Time  `json:"created_at"`
-	CompletedAt  *time.Time `json:"completed_at"`
-	AuthorUserID int        `json:"author_user_id"`
-}
+type CreateTaskResponse TaskDTOResponse
 
 func (h *TasksHTTPHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -51,21 +40,8 @@ func (h *TasksHTTPHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := taskDTOFromDomain(taskDomain)
+	response := CreateTaskResponse(taskDTOFromDomain(taskDomain))
 
 	responseHandler.JSONResponse(response, http.StatusCreated)
 
-}
-
-func taskDTOFromDomain(task domain.Task) CreateTaskResponse {
-	return CreateTaskResponse{
-		ID:           task.ID,
-		Version:      task.Version,
-		Title:        task.Title,
-		Description:  task.Description,
-		Completed:    task.Completed,
-		CreatedAt:    task.CreatedAt,
-		CompletedAt:  task.CompletedAt,
-		AuthorUserID: task.AuthorUserID,
-	}
 }
