@@ -10,14 +10,28 @@ import (
 	core_postgres_poll "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
 )
 
-func (r *TaskRepository) CreateTask(ctx context.Context, task domain.Task) (domain.Task, error) {
+func (r *TaskRepository) PatchTask(ctx context.Context, id int, task domain.Task) (domain.Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `
-	INSERT INTO todoapp.tasks (title, description, completed, created_at, completed_at, author_user_id )
-	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING id, version, title, description, completed, created_at, completed_at, author_user_id
+	UPDATE todoapp.tasks
+	SET
+	    title=$1,
+	    description=$2,
+	    completed=$3,
+	    completed_at=$4,
+		version=version+1
+	WHERE id=$5 AND version=$6
+	RETURNING 
+	    id, 
+	    version, 
+	    title, 
+	    description, 
+	    completed, 
+	    created_at, 
+	    completed_at, 
+	    author_user_id;
 	`
 
 	row := r.pool.QueryRow(
@@ -26,9 +40,9 @@ func (r *TaskRepository) CreateTask(ctx context.Context, task domain.Task) (doma
 		task.Title,
 		task.Description,
 		task.Completed,
-		task.CreatedAt,
 		task.CompletedAt,
-		task.AuthorUserID,
+		id,
+		task.Version,
 	)
 
 	var taskModel TaskModel
@@ -45,12 +59,11 @@ func (r *TaskRepository) CreateTask(ctx context.Context, task domain.Task) (doma
 	)
 
 	if err != nil {
-		if errors.Is(err, core_postgres_poll.ErrViolatesForeignKey) {
-			return domain.Task{}, fmt.Errorf(""+
-				"%v: user with id=`%d`: %w",
-				err,
-				task.AuthorUserID,
-				core_errors.ErrNotFound,
+		if errors.Is(err, core_postgres_poll.ErrNoRows) {
+			return domain.Task{}, fmt.Errorf(
+				"task with id='%d' concurrently accessed: %w",
+				id,
+				core_errors.ErrConflict,
 			)
 		}
 
