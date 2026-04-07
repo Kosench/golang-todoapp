@@ -51,7 +51,7 @@ func (r *TasksRepository) GetTasks(ctx context.Context, userID *int, limit *int,
 		)
 
 		if err != nil {
-			return nil, fmt.Errorf("scan users: %w", err)
+			return nil, fmt.Errorf("scan task: %w", err)
 		}
 
 		taskModels = append(taskModels, taskModel)
