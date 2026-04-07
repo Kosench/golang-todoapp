@@ -10,7 +10,7 @@ import (
 	core_postgres_poll "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
 )
 
-func (r *TasksRepository) CreateTask(ctx context.Context, task domain.Task) (domain.Task, error) {
+func (r *TaskRepository) CreateTask(ctx context.Context, task domain.Task) (domain.Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -57,16 +57,7 @@ func (r *TasksRepository) CreateTask(ctx context.Context, task domain.Task) (dom
 		return domain.Task{}, fmt.Errorf("scan error: %w", err)
 	}
 
-	taskDomain := domain.NewTask(
-		taskModel.ID,
-		taskModel.Version,
-		taskModel.Title,
-		taskModel.Description,
-		taskModel.Completed,
-		taskModel.CreatedAt,
-		taskModel.CompletedAt,
-		taskModel.AuthorUserID,
-	)
+	taskDomain := taskDomainFromModel(taskModel)
 
 	return taskDomain, nil
 }

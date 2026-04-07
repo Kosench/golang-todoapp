@@ -7,7 +7,7 @@ import (
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 )
 
-func (r *TasksRepository) GetTasks(ctx context.Context, userID *int, limit *int, offset *int) ([]domain.Task, error) {
+func (r *TaskRepository) GetTasks(ctx context.Context, userID *int, limit *int, offset *int) ([]domain.Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
