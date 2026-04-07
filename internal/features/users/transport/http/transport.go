@@ -54,7 +54,7 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 		{
 			Method:  http.MethodPatch,
 			Path:    "/users/{id}",
-			Handler: h.PathUser,
+			Handler: h.PatchUser,
 		},
 	}
 }
