@@ -29,7 +29,7 @@ func NewConfig() (Config, error) {
 func NewMustConfig() Config {
 	cfg, err := NewConfig()
 	if err != nil {
-		err = fmt.Errorf("grt Postgres connection pool config: %w", err)
+		err = fmt.Errorf("get Postgres connection pool config: %w", err)
 		panic(err)
 	}
 
