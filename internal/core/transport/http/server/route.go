@@ -10,20 +10,13 @@ type Route struct {
 	Method     string
 	Path       string
 	Handler    http.HandlerFunc
-	MiddleWare []core_http_middleware.Middleware
+	Middleware []core_http_middleware.Middleware
 }
 
-func NewRoute(meth, path string, handler http.HandlerFunc) Route {
-	return Route{
-		Method:  meth,
-		Path:    path,
-		Handler: handler,
-	}
-}
-
-func (r *Route) WithMiddleWare() http.Handler {
+// WithMiddleware применяет middleware маршрута к обработчику и возвращает готовый http.Handler.
+func (r *Route) WithMiddleware() http.Handler {
 	return core_http_middleware.ChainMiddleware(
 		r.Handler,
-		r.MiddleWare...,
+		r.Middleware...,
 	)
 }

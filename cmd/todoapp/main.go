@@ -21,6 +21,9 @@ import (
 	users_postgres_repository "github.com/Kosench/golang-todoapp/internal/features/users/repository/postgres"
 	users_service "github.com/Kosench/golang-todoapp/internal/features/users/service"
 	users_transport_http "github.com/Kosench/golang-todoapp/internal/features/users/transport/http"
+	web_fs_repository "github.com/Kosench/golang-todoapp/internal/features/web/repository/file_system"
+	web_service "github.com/Kosench/golang-todoapp/internal/features/web/service"
+	web_transport_http "github.com/Kosench/golang-todoapp/internal/features/web/transport/http"
 	"go.uber.org/zap"
 
 	_ "github.com/Kosench/golang-todoapp/docs"
@@ -77,6 +80,11 @@ func main() {
 	statsService := statistics_service.NewStatisticsService(statsRepository)
 	statsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statsService)
 
+	logger.Debug("initializing feature", zap.String("feature", "web"))
+	webRepository := web_fs_repository.NewWebRepository()
+	webService := web_service.NewWebService(webRepository)
+	webTransportHTTP := web_transport_http.NewWebHTTPHandler(webService)
+
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
@@ -88,10 +96,10 @@ func main() {
 		core_http_middleware.Panic(),
 	)
 
-	apiVersionRouterV1 := core_http_server.NewVersionAPI(core_http_server.APIVersion1)
-	apiVersionRouterV1.RegisterRoutes(usersTransportHTTP.Routes()...)
-	apiVersionRouterV1.RegisterRoutes(tasksTransportHTTP.Routes()...)
-	apiVersionRouterV1.RegisterRoutes(statsTransportHTTP.Routes()...)
+	apiVersionRouterV1 := core_http_server.NewAPIVersionRouter(core_http_server.ApiVersion1)
+	apiVersionRouterV1.AddRoutes(usersTransportHTTP.Routes()...)
+	apiVersionRouterV1.AddRoutes(tasksTransportHTTP.Routes()...)
+	apiVersionRouterV1.AddRoutes(statsTransportHTTP.Routes()...)
 
 	//apiVersionRouterV2 := core_http_server.NewVersionAPI(
 	//	core_http_server.APIVersion2,
@@ -104,6 +112,7 @@ func main() {
 		//apiVersionRouterV2,
 	)
 
+	httpServer.RegisterRoutes(webTransportHTTP.Routes()...)
 	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {

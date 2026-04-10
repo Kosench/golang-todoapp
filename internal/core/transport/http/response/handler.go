@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
 	"go.uber.org/zap"
@@ -35,6 +36,14 @@ func (h *HTTPResponseHandler) JSONResponse(responseBody any, statusCode int) {
 
 func (h *HTTPResponseHandler) NoContentResponse() {
 	h.rw.WriteHeader(http.StatusNoContent)
+}
+
+func (h *HTTPResponseHandler) HTMLResponse(htmlFile domain.File) {
+	h.rw.Header().Set("Content-Type", "text/html; charset=utf-8")
+	h.rw.WriteHeader(http.StatusOK)
+	if _, err := h.rw.Write(htmlFile.Buffer()); err != nil {
+		h.log.Error("write HTML HTTP response", zap.Error(err))
+	}
 }
 
 func (h *HTTPResponseHandler) ErrorResponse(err error, msg string) {
