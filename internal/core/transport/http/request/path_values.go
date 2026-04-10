@@ -13,7 +13,7 @@ func GetIntPathValue(r *http.Request, key string) (int, error) {
 	if pathValue == "" {
 		return 0, fmt.Errorf(
 			"no key'%s' in path values: %w",
-			pathValue,
+			key,
 			core_errors.ErrInvalidArgument,
 		)
 	}

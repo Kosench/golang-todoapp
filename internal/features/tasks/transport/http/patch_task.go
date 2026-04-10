@@ -40,6 +40,19 @@ func (r *PatchTaskRequest) Validate() error {
 
 type PatchTaskResponse TaskDTOResponse
 
+// PatchTask godoc
+// @Summary Update a task
+// @Description Partially updates a task with the provided fields (title, description, completed status)
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param id path int true "Task ID" minimum(1)
+// @Param request body PatchTaskRequest true "Task update data"
+// @Success 200 {object} PatchTaskResponse "Task updated successfully"
+// @Failure 400 {object} core_http_response.ErrorResponse "Invalid request body or validation error"
+// @Failure 404 {object} core_http_response.ErrorResponse "Task not found"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /tasks/{id} [patch]
 func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

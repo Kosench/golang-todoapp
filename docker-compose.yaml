@@ -59,5 +59,14 @@ services:
     networks:
       - app-net
 
+  swagger:
+    build:
+      context: ${PROJECT_ROOT}
+      dockerfile: ${PROJECT_ROOT}/cmd/swagger/Dockerfile
+    volumes:
+      - ${PROJECT_ROOT}:/code
+    networks:
+      - app-net
+
 networks:
   app-net:

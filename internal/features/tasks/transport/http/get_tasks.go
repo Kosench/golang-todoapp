@@ -12,6 +12,18 @@ import (
 
 type GetTasksResponse []TaskDTOResponse
 
+// GetTasks godoc
+// @Summary Get all tasks
+// @Description Retrieves a paginated list of tasks with optional user_id filter
+// @Tags tasks
+// @Produce json
+// @Param user_id query int false "Filter tasks by user ID" minimum(1)
+// @Param limit query int false "Maximum number of tasks to return" minimum(0)
+// @Param offset query int false "Number of tasks to skip" minimum(0)
+// @Success 200 {array} TaskDTOResponse "List of tasks"
+// @Failure 400 {object} core_http_response.ErrorResponse "Invalid query parameters"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /tasks [get]
 func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

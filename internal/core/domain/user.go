@@ -37,6 +37,8 @@ func NewUserUninitialized(fullName string, phoneNumber *string) User {
 	)
 }
 
+var phoneRegex = regexp.MustCompile(`^\+[0-9]+$`)
+
 func (u User) Validate() error {
 	fullNameLen := len([]rune(u.FullName))
 	if fullNameLen < 3 || fullNameLen > 100 {
@@ -56,9 +58,7 @@ func (u User) Validate() error {
 			)
 		}
 
-		re := regexp.MustCompile(`^\+[0-9]+$`)
-
-		if !re.MatchString(*u.PhoneNumber) {
+		if !phoneRegex.MatchString(*u.PhoneNumber) {
 			return fmt.Errorf(
 				"invalid `PhoneNumber` format: %w",
 				core_errors.ErrInvalidArgument,
