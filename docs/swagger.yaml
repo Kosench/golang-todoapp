@@ -1,0 +1,578 @@
+basePath: /api/v1
+definitions:
+  github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  github_com_Kosench_golang-todoapp_internal_core_transport_http_types.Nullable-bool:
+    properties:
+      set:
+        type: boolean
+      value:
+        type: boolean
+    type: object
+  github_com_Kosench_golang-todoapp_internal_core_transport_http_types.Nullable-string:
+    properties:
+      set:
+        type: boolean
+      value:
+        type: string
+    type: object
+  internal_features_statistics_transport.GetStatisticsResponse:
+    properties:
+      tasks_average_completion_time:
+        type: string
+      tasks_completed:
+        type: integer
+      tasks_completed_rate:
+        type: number
+      tasks_created:
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.CreateTaskRequest:
+    properties:
+      author_user_id:
+        type: integer
+      description:
+        maxLength: 1000
+        minLength: 1
+        type: string
+      title:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - author_user_id
+    - title
+    type: object
+  internal_features_tasks_transport_http.CreateTaskResponse:
+    properties:
+      author_user_id:
+        type: integer
+      completed:
+        type: boolean
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.GetTaskResponse:
+    properties:
+      author_user_id:
+        type: integer
+      completed:
+        type: boolean
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.PatchTaskRequest:
+    properties:
+      completed:
+        $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_types.Nullable-bool'
+      description:
+        $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_types.Nullable-string'
+      title:
+        $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_types.Nullable-string'
+    type: object
+  internal_features_tasks_transport_http.PatchTaskResponse:
+    properties:
+      author_user_id:
+        type: integer
+      completed:
+        type: boolean
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.TaskDTOResponse:
+    properties:
+      author_user_id:
+        type: integer
+      completed:
+        type: boolean
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_users_transport_http.CreateUserRequest:
+    properties:
+      full_name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      phone_number:
+        maxLength: 15
+        minLength: 10
+        type: string
+    required:
+    - full_name
+    type: object
+  internal_features_users_transport_http.CreateUserResponse:
+    properties:
+      full_name:
+        type: string
+      id:
+        type: integer
+      phone_number:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_users_transport_http.GetUserResponse:
+    properties:
+      full_name:
+        type: string
+      id:
+        type: integer
+      phone_number:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_users_transport_http.PatchUserResponse:
+    properties:
+      full_name:
+        type: string
+      id:
+        type: integer
+      phone_number:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_users_transport_http.PathUserRequest:
+    properties:
+      full_name:
+        $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_types.Nullable-string'
+      phone_number:
+        $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_types.Nullable-string'
+    type: object
+  internal_features_users_transport_http.UserDTOResponse:
+    properties:
+      full_name:
+        type: string
+      id:
+        type: integer
+      phone_number:
+        type: string
+      version:
+        type: integer
+    type: object
+host: 127.0.0.1:5050
+info:
+  contact: {}
+  description: Todo Application REST-API scheme
+  title: Golang Todo API
+  version: "1.0"
+paths:
+  /statistics:
+    get:
+      description: Retrieves task completion statistics with optional user_id and
+        date range filters
+      parameters:
+      - description: Filter statistics by user ID
+        in: query
+        minimum: 1
+        name: user_id
+        type: integer
+      - description: Start date filter (ISO 8601 format)
+        example: "2024-01-01T00:00:00Z"
+        in: query
+        name: from
+        type: string
+      - description: End date filter (ISO 8601 format)
+        example: "2024-12-31T23:59:59Z"
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Statistics retrieved successfully
+          schema:
+            $ref: '#/definitions/internal_features_statistics_transport.GetStatisticsResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Get task statistics
+      tags:
+      - statistics
+  /tasks:
+    get:
+      description: Retrieves a paginated list of tasks with optional user_id filter
+      parameters:
+      - description: Filter tasks by user ID
+        in: query
+        minimum: 1
+        name: user_id
+        type: integer
+      - description: Maximum number of tasks to return
+        in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - description: Number of tasks to skip
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of tasks
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_tasks_transport_http.TaskDTOResponse'
+            type: array
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Get all tasks
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Creates a new task with the provided title, optional description,
+        and author user ID
+      parameters:
+      - description: Task creation data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Task created successfully
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskResponse'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Create a new task
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      description: Deletes a task by its unique identifier
+      parameters:
+      - description: Task ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Task deleted successfully
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Delete a task
+      tags:
+      - tasks
+    get:
+      description: Retrieves a single task by its unique identifier
+      parameters:
+      - description: Task ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task found
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.GetTaskResponse'
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Get a task by ID
+      tags:
+      - tasks
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates a task with the provided fields (title, description,
+        completed status)
+      parameters:
+      - description: Task ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      - description: Task update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task updated successfully
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskResponse'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Update a task
+      tags:
+      - tasks
+  /users:
+    get:
+      description: Retrieves a paginated list of users with optional limit and offset
+      parameters:
+      - description: Maximum number of users to return
+        in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - description: Number of users to skip
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
+            type: array
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user with the provided full name and optional phone
+        number
+      parameters:
+      - description: User creation data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.CreateUserResponse'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Create a new user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Deletes a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: User deleted successfully
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      description: Retrieves a single user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.GetUserResponse'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Get a user by ID
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates a user by their ID. Only provided fields will
+        be updated.
+      parameters:
+      - description: User ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      - description: User update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.PathUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.PatchUserResponse'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Update a user
+      tags:
+      - users
+swagger: "2.0"

@@ -47,6 +47,19 @@ func (r *PathUserRequest) Validate() error {
 
 type PatchUserResponse UserDTOResponse
 
+// PatchUser godoc
+// @Summary Update a user
+// @Description Partially updates a user by their ID. Only provided fields will be updated.
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID" minimum(1)
+// @Param request body PathUserRequest true "User update data"
+// @Success 200 {object} PatchUserResponse "User updated successfully"
+// @Failure 400 {object} core_http_response.ErrorResponse "Invalid request body or validation error"
+// @Failure 404 {object} core_http_response.ErrorResponse "User not found"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /users/{id} [patch]
 func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
