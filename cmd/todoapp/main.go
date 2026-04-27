@@ -9,7 +9,7 @@ import (
 	"time"
 
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
-	"github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool/pgx"
+	core_pgx_pool "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/Kosench/golang-todoapp/internal/core/transport/http/middleware"
 	core_http_server "github.com/Kosench/golang-todoapp/internal/core/transport/http/server"
 	statistics_postgres_repository "github.com/Kosench/golang-todoapp/internal/features/statistics/repository/postgres"
