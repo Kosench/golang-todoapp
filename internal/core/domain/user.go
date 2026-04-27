@@ -74,7 +74,7 @@ type UserPatch struct {
 	PhoneNumber Nullable[string]
 }
 
-func NewUserPath(fullName Nullable[string], phoneNumber Nullable[string]) UserPatch {
+func NewUserPatch(fullName Nullable[string], phoneNumber Nullable[string]) UserPatch {
 	return UserPatch{
 		FullName:    fullName,
 		PhoneNumber: phoneNumber,

@@ -2,7 +2,7 @@ package core_http_response
 
 import "net/http"
 
-var StatusCodeUninitialized = -1
+const StatusCodeUninitialized = -1
 
 type ResponseWriter struct {
 	http.ResponseWriter

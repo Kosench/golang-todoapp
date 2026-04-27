@@ -7,7 +7,7 @@ import (
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
-	core_postgres_poll "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
+	core_postgres_pool "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
 )
 
 func (r *TaskRepository) PatchTask(ctx context.Context, id int, task domain.Task) (domain.Task, error) {
@@ -59,7 +59,7 @@ func (r *TaskRepository) PatchTask(ctx context.Context, id int, task domain.Task
 	)
 
 	if err != nil {
-		if errors.Is(err, core_postgres_poll.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.Task{}, fmt.Errorf(
 				"task with id='%d' concurrently accessed: %w",
 				id,

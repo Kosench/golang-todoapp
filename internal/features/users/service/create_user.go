@@ -8,7 +8,6 @@ import (
 )
 
 func (s *UserService) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
-	//1. user.validate
 	if err := user.Validate(); err != nil {
 		return domain.User{}, fmt.Errorf("validate user domain: %w", err)
 	}

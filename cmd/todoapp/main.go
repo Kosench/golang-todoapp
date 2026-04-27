@@ -55,7 +55,6 @@ func main() {
 	defer logger.Close()
 
 	logger.Debug("initializing postgres connection pool")
-	//pool, err := core_postgres_poll.NewConnectionPool(ctx, core_pgx_pool.NewMustConfig())
 	pool, err := core_pgx_pool.NewPool(
 		ctx,
 		core_pgx_pool.NewMustConfig(),
@@ -102,15 +101,8 @@ func main() {
 	apiVersionRouterV1.AddRoutes(tasksTransportHTTP.Routes()...)
 	apiVersionRouterV1.AddRoutes(statsTransportHTTP.Routes()...)
 
-	//apiVersionRouterV2 := core_http_server.NewVersionAPI(
-	//	core_http_server.APIVersion2,
-	//	core_http_middleware.Dummy("api v2 middleware"),
-	//)
-	//apiVersionRouterV2.RegisterRoutes(usersTransportHTTP.Routes()...)
-
 	httpServer.RegisterAPIRouters(
 		apiVersionRouterV1,
-		//apiVersionRouterV2,
 	)
 
 	httpServer.RegisterRoutes(webTransportHTTP.Routes()...)

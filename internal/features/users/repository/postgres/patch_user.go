@@ -7,7 +7,7 @@ import (
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
-	core_postgres_poll "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
+	core_postgres_pool "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
 )
 
 func (r *UsersRepository) PatchUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
@@ -45,7 +45,7 @@ func (r *UsersRepository) PatchUser(ctx context.Context, id int, user domain.Use
 		&userModel.PhoneNumber,
 	)
 	if err != nil {
-		if errors.Is(err, core_postgres_poll.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
 				"user with id='%d' concurrently accessed: %w",
 				id,

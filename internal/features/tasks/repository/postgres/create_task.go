@@ -7,7 +7,7 @@ import (
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
-	core_postgres_poll "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
+	core_postgres_pool "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
 )
 
 func (r *TaskRepository) CreateTask(ctx context.Context, task domain.Task) (domain.Task, error) {
@@ -45,7 +45,7 @@ func (r *TaskRepository) CreateTask(ctx context.Context, task domain.Task) (doma
 	)
 
 	if err != nil {
-		if errors.Is(err, core_postgres_poll.ErrViolatesForeignKey) {
+		if errors.Is(err, core_postgres_pool.ErrViolatesForeignKey) {
 			return domain.Task{}, fmt.Errorf(""+
 				"%v: user with id=`%d`: %w",
 				err,

@@ -12,12 +12,12 @@ import (
 	core_http_types "github.com/Kosench/golang-todoapp/internal/core/transport/http/types"
 )
 
-type PathUserRequest struct {
+type PatchUserRequest struct {
 	FullName    core_http_types.Nullable[string] `json:"full_name"`
 	PhoneNumber core_http_types.Nullable[string] `json:"phone_number"`
 }
 
-func (r *PathUserRequest) Validate() error {
+func (r *PatchUserRequest) Validate() error {
 	if r.FullName.Set {
 		if r.FullName.Value == nil {
 			return fmt.Errorf("FullName cant be NULL")
@@ -54,7 +54,7 @@ type PatchUserResponse UserDTOResponse
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID" minimum(1)
-// @Param request body PathUserRequest true "User update data"
+// @Param request body PatchUserRequest true "User update data"
 // @Success 200 {object} PatchUserResponse "User updated successfully"
 // @Failure 400 {object} core_http_response.ErrorResponse "Invalid request body or validation error"
 // @Failure 404 {object} core_http_response.ErrorResponse "User not found"
@@ -75,7 +75,7 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req PathUserRequest
+	var req PatchUserRequest
 	if err := core_http_request.DecodeAndValidator(r, &req); err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -101,8 +101,8 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	responseHandler.JSONResponse(response, http.StatusOK)
 }
 
-func userPatchFromRequest(req PathUserRequest) domain.UserPatch {
-	return domain.NewUserPath(
+func userPatchFromRequest(req PatchUserRequest) domain.UserPatch {
+	return domain.NewUserPatch(
 		req.FullName.ToDomain(),
 		req.PhoneNumber.ToDomain(),
 	)
