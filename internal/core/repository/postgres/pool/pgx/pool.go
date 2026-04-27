@@ -71,3 +71,24 @@ func NewPool(ctx context.Context, config Config) (*Pool, error) {
 func (p *Pool) OpTimeout() time.Duration {
 	return p.opTimeout
 }
+
+func NewPoolFromConnString(ctx context.Context, connStr string, opTimeout time.Duration) (*Pool, error) {
+	pgxConfig, err := pgxpool.ParseConfig(connStr)
+	if err != nil {
+		return nil, fmt.Errorf("parse pgx config: %w", err)
+	}
+
+	pool, err := pgxpool.NewWithConfig(ctx, pgxConfig)
+	if err != nil {
+		return nil, fmt.Errorf("create pgx pool: %w", err)
+	}
+
+	if err = pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("pgx pool ping: %w", err)
+	}
+
+	return &Pool{
+		Pool:      pool,
+		opTimeout: opTimeout,
+	}, nil
+}
