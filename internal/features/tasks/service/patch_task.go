@@ -3,6 +3,7 @@ package tasks_service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 )
@@ -13,7 +14,7 @@ func (s *TaskService) PatchTask(ctx context.Context, id int, patch domain.TaskPa
 		return domain.Task{}, fmt.Errorf("get task: %w", err)
 	}
 
-	if err = task.ApplyPatch(patch); err != nil {
+	if err = task.ApplyPatch(patch, time.Now()); err != nil {
 		return domain.Task{}, fmt.Errorf("apply patch task: %w", err)
 	}
 

@@ -2,6 +2,7 @@ package tasks_transport_http
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
@@ -43,6 +44,7 @@ func (h *TasksHTTPHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		req.Title,
 		req.Description,
 		req.AuthorUserID,
+		time.Now(),
 	)
 
 	taskDomain, err := h.tasksService.CreateTask(ctx, taskDomain)

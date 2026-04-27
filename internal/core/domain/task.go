@@ -41,14 +41,14 @@ func NewTask(
 	}
 }
 
-func NewTaskUninitialized(title string, description *string, authorUserID int) Task {
+func NewTaskUninitialized(title string, description *string, authorUserID int, createdAt time.Time) Task {
 	return NewTask(
 		UninitializedID,
 		UninitializedVersion,
 		title,
 		description,
 		false,
-		time.Now(),
+		createdAt,
 		nil,
 		authorUserID,
 	)
@@ -138,7 +138,7 @@ func (p *TaskPatch) Validate() error {
 	return nil
 }
 
-func (t *Task) ApplyPatch(patch TaskPatch) error {
+func (t *Task) ApplyPatch(patch TaskPatch, now time.Time) error {
 	if err := patch.Validate(); err != nil {
 		return fmt.Errorf("validate task patch: %w", err)
 	}
@@ -157,8 +157,7 @@ func (t *Task) ApplyPatch(patch TaskPatch) error {
 		tmp.Completed = *patch.Completed.Value
 
 		if tmp.Completed {
-			completedAt := time.Now()
-			tmp.CompletedAt = &completedAt
+			tmp.CompletedAt = &now
 		} else {
 			tmp.CompletedAt = nil
 		}
