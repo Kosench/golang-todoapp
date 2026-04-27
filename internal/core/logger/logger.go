@@ -25,6 +25,15 @@ type Logger struct {
 	file *os.File
 }
 
+// NewNopLogger создаёт логгер-заглушку, который ничего не пишет.
+// Используется в тестах, чтобы не создавать файлы и не зависеть от файловой системы.
+func NewNopLogger() *Logger {
+	return &Logger{
+		Logger: zap.NewNop(),
+		file:   nil,
+	}
+}
+
 func NewLogger(config LoggerConfig) (*Logger, error) {
 	zapLvl := zap.NewAtomicLevel()
 	if err := zapLvl.UnmarshalText([]byte(config.Level)); err != nil {
@@ -71,7 +80,7 @@ func ToContext(ctx context.Context, log *Logger) context.Context {
 func FromContext(ctx context.Context) *Logger {
 	log, ok := ctx.Value(key).(*Logger)
 	if !ok {
-		panic("no log in context")
+		return NewNopLogger()
 	}
 
 	return log
@@ -85,6 +94,9 @@ func (l *Logger) With(field ...zap.Field) *Logger {
 }
 
 func (l *Logger) Close() {
+	if l.file == nil {
+		return
+	}
 	if err := l.file.Close(); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to close application logger: %v\n", err)
 	}
