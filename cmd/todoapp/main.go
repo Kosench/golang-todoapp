@@ -82,7 +82,7 @@ func main() {
 
 	logger.Debug("initializing feature", zap.String("feature", "web"))
 	webRepository := web_fs_repository.NewWebRepository()
-	webService := web_service.NewWebService(webRepository)
+	webService := web_service.NewWebService(webRepository, os.Getenv("PROJECT_ROOT"))
 	webTransportHTTP := web_transport_http.NewWebHTTPHandler(webService)
 
 	logger.Debug("initializing HTTP server")

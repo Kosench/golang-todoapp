@@ -2,18 +2,17 @@ package web_service
 
 import (
 	"fmt"
-	"os"
 	"path"
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 )
 
 // GetMainPage возвращает содержимое главной HTML-страницы.
-// Путь к файлу формируется относительно PROJECT_ROOT (переменная окружения),
+// Путь к файлу формируется относительно projectRoot, переданного через конструктор,
 // чтобы приложение работало корректно независимо от рабочей директории запуска.
 func (s *WebService) GetMainPage() (domain.File, error) {
 	htmlFilePath := path.Join(
-		os.Getenv("PROJECT_ROOT"),
+		s.projectRoot,
 		"/public/index.html",
 	)
 
