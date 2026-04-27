@@ -1,7 +1,6 @@
 package tasks_transport_http
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
@@ -15,27 +14,6 @@ type PatchTaskRequest struct {
 	Title       core_http_types.Nullable[string] `json:"title"`
 	Description core_http_types.Nullable[string] `json:"description"`
 	Completed   core_http_types.Nullable[bool]   `json:"completed"`
-}
-
-func (r *PatchTaskRequest) Validate() error {
-	if r.Title.Set {
-		if r.Title.Value == nil {
-			return fmt.Errorf("title cant be NULL")
-		}
-
-		titleLen := len([]rune(*r.Title.Value))
-		if titleLen < 1 || titleLen > 100 {
-			return fmt.Errorf("title between 1 and 100 symbol")
-		}
-	}
-
-	if r.Completed.Set {
-		if r.Completed.Value == nil {
-			return fmt.Errorf("`Completed` cant be NULL")
-		}
-	}
-
-	return nil
 }
 
 type PatchTaskResponse TaskDTOResponse
