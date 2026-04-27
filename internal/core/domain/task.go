@@ -79,10 +79,10 @@ func (t *Task) Validate() error {
 
 	if t.Description != nil {
 		descriptionLen := len([]rune(*t.Description))
-		if descriptionLen < 1 || descriptionLen > 100 {
+		if descriptionLen < 1 || descriptionLen > 1000 {
 			return fmt.Errorf(
-				"description title len: %d: %w",
-				titleLen,
+				"invalid description len: %d: %w",
+				descriptionLen,
 				core_errors.ErrInvalidArgument)
 		}
 	}

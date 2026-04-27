@@ -20,7 +20,7 @@ func NewConfig() (Config, error) {
 	var config Config
 
 	if err := envconfig.Process("POSTGRES", &config); err != nil {
-		return Config{}, fmt.Errorf("process env config %w: ", err)
+		return Config{}, fmt.Errorf("process env config: %w", err)
 	}
 
 	return config, nil

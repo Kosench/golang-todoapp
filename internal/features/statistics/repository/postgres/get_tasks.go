@@ -43,7 +43,7 @@ func (r *StatisticsRepository) GetTasks(
 	}
 
 	if to != nil {
-		add("completed_at < $%d", *to)
+		add("created_at < $%d", *to)
 	}
 
 	if len(conditions) > 0 {

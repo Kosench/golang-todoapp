@@ -49,7 +49,7 @@ func main() {
 
 	logger, err := core_logger.NewLogger(core_logger.NewConfigMust())
 	if err != nil {
-		fmt.Printf("failed to init application logger: %w", err)
+		fmt.Fprintf(os.Stderr, "failed to init application logger: %v\n", err)
 		os.Exit(1)
 	}
 	defer logger.Close()
@@ -61,7 +61,8 @@ func main() {
 		core_pgx_pool.NewMustConfig(),
 	)
 	if err != nil {
-		logger.Fatal("failed to init postgres connection pool %w: ", zap.Error(err))
+		logger.Error("failed to init postgres connection pool", zap.Error(err))
+		os.Exit(1)
 	}
 	defer pool.Close()
 
