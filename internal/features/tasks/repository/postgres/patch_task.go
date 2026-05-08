@@ -60,11 +60,18 @@ func (r *TaskRepository) PatchTask(ctx context.Context, id int, task domain.Task
 
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Task{}, fmt.Errorf(
-				"task with id='%d' concurrently accessed: %w",
-				id,
-				core_errors.ErrConflict,
-			)
+			exists, existsErr := r.taskExists(ctx, id)
+			if existsErr != nil {
+				return domain.Task{}, fmt.Errorf("check task existence: %w", existsErr)
+			}
+			if !exists {
+				return domain.Task{}, fmt.Errorf("task with id='%d': %w", id, core_errors.ErrNotFound)
+			}
+
+			return domain.Task{}, fmt.Errorf("task with id='%d' concurrently accessed: %w", id, core_errors.ErrConflict)
+		}
+		if errors.Is(err, core_postgres_pool.ErrViolatesCheckConstraint) {
+			return domain.Task{}, fmt.Errorf("task violates database constraint: %w", core_errors.ErrInvalidArgument)
 		}
 
 		return domain.Task{}, fmt.Errorf("scan error: %w", err)
@@ -73,4 +80,23 @@ func (r *TaskRepository) PatchTask(ctx context.Context, id int, task domain.Task
 	taskDomain := taskDomainFromModel(taskModel)
 
 	return taskDomain, nil
+}
+
+func (r *TaskRepository) taskExists(ctx context.Context, id int) (bool, error) {
+	query := `
+	SELECT EXISTS(
+		SELECT 1
+		FROM todoapp.tasks
+		WHERE id=$1
+	);
+	`
+
+	row := r.pool.QueryRow(ctx, query, id)
+
+	var exists bool
+	if err := row.Scan(&exists); err != nil {
+		return false, fmt.Errorf("scan task exists: %w", err)
+	}
+
+	return exists, nil
 }

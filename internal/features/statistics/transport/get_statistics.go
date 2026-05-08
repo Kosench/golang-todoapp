@@ -64,7 +64,7 @@ func getUserIDFromToQueryParams(r *http.Request) (*int, *time.Time, *time.Time, 
 		toQueryParamKey     = "to"
 	)
 
-	userID, err := core_http_request.GetIntQueryParam(r, userIDQueryParamKey)
+	userID, err := core_http_request.GetPositiveIntQueryParam(r, userIDQueryParamKey)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("get user_id query param: %w", err)
 	}

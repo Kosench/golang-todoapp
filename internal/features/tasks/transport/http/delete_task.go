@@ -23,7 +23,7 @@ func (h *TasksHTTPHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
-	taskID, err := core_http_request.GetIntPathValue(r, "id")
+	taskID, err := core_http_request.GetPositiveIntPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,

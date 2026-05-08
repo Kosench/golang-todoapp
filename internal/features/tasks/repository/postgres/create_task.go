@@ -53,6 +53,9 @@ func (r *TaskRepository) CreateTask(ctx context.Context, task domain.Task) (doma
 				core_errors.ErrNotFound,
 			)
 		}
+		if errors.Is(err, core_postgres_pool.ErrViolatesCheckConstraint) {
+			return domain.Task{}, fmt.Errorf("task violates database constraint: %w", core_errors.ErrInvalidArgument)
+		}
 
 		return domain.Task{}, fmt.Errorf("scan error: %w", err)
 	}

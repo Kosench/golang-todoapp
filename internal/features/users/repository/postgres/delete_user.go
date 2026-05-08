@@ -2,9 +2,11 @@ package users_postgres_repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
+	core_postgres_pool "github.com/Kosench/golang-todoapp/internal/core/repository/postgres/pool"
 )
 
 func (r *UsersRepository) DeleteUser(ctx context.Context, id int) error {
@@ -18,6 +20,10 @@ func (r *UsersRepository) DeleteUser(ctx context.Context, id int) error {
 
 	cmdTag, err := r.pool.Exec(ctx, query, id)
 	if err != nil {
+		if errors.Is(err, core_postgres_pool.ErrViolatesForeignKey) {
+			return fmt.Errorf("user with id='%d' has dependent records: %w", id, core_errors.ErrConflict)
+		}
+
 		return fmt.Errorf("exec query: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {

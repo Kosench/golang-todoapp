@@ -9,6 +9,7 @@ import (
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
+	tasks_postgres_repository "github.com/Kosench/golang-todoapp/internal/features/tasks/repository/postgres"
 	users_postgres_repository "github.com/Kosench/golang-todoapp/internal/features/users/repository/postgres"
 )
 
@@ -144,6 +145,20 @@ func TestUsersRepository_PatchUser_Conflict(t *testing.T) {
 	}
 }
 
+func TestUsersRepository_PatchUser_NotFound(t *testing.T) {
+	cleanup(t)
+
+	ctx := context.Background()
+	repo := users_postgres_repository.NewUsersRepository(pool)
+
+	user := domain.NewUser(missingID, 1, "Missing User", nil)
+
+	_, err := repo.PatchUser(ctx, missingID, user)
+	if !errors.Is(err, core_errors.ErrNotFound) {
+		t.Fatalf("error = %v, want ErrNotFound", err)
+	}
+}
+
 func TestUsersRepository_DeleteUser(t *testing.T) {
 	cleanup(t)
 
@@ -158,6 +173,25 @@ func TestUsersRepository_DeleteUser(t *testing.T) {
 	_, err := repo.GetUser(ctx, created.ID)
 	if !errors.Is(err, core_errors.ErrNotFound) {
 		t.Fatalf("GetUser() after delete error = %v, want ErrNotFound", err)
+	}
+}
+
+func TestUsersRepository_DeleteUser_ConflictWhenUserHasTasks(t *testing.T) {
+	cleanup(t)
+
+	ctx := context.Background()
+	usersRepo := users_postgres_repository.NewUsersRepository(pool)
+	tasksRepo := tasks_postgres_repository.NewTasksRepository(pool)
+	created := createUser(t, ctx, "John Doe")
+
+	_, err := tasksRepo.CreateTask(ctx, domain.NewTaskUninitialized("Task", nil, created.ID, fixedTime()))
+	if err != nil {
+		t.Fatalf("create task: %v", err)
+	}
+
+	err = usersRepo.DeleteUser(ctx, created.ID)
+	if !errors.Is(err, core_errors.ErrConflict) {
+		t.Fatalf("error = %v, want ErrConflict", err)
 	}
 }
 

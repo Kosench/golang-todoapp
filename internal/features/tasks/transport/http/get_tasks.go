@@ -61,7 +61,7 @@ func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) 
 		offsetQueryParamKey = "offset"
 	)
 
-	userID, err := core_http_request.GetIntQueryParam(r, userIDQueryParamKey)
+	userID, err := core_http_request.GetPositiveIntQueryParam(r, userIDQueryParamKey)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("get user_id query param: %w", err)
 	}

@@ -31,3 +31,20 @@ func GetIntPathValue(r *http.Request, key string) (int, error) {
 
 	return val, nil
 }
+
+func GetPositiveIntPathValue(r *http.Request, key string) (int, error) {
+	val, err := GetIntPathValue(r, key)
+	if err != nil {
+		return 0, err
+	}
+
+	if val <= 0 {
+		return 0, fmt.Errorf(
+			"path value by key='%s' must be positive: %w",
+			key,
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	return val, nil
+}

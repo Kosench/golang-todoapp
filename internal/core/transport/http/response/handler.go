@@ -3,13 +3,19 @@ package core_http_response
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/Kosench/golang-todoapp/internal/core/domain"
 	core_errors "github.com/Kosench/golang-todoapp/internal/core/errors"
 	core_logger "github.com/Kosench/golang-todoapp/internal/core/logger"
 	"go.uber.org/zap"
+)
+
+const (
+	errorCodeInvalidArgument = "invalid_argument"
+	errorCodeNotFound        = "not_found"
+	errorCodeConflict        = "conflict"
+	errorCodeInternal        = "internal"
 )
 
 type HTTPResponseHandler struct {
@@ -49,43 +55,52 @@ func (h *HTTPResponseHandler) HTMLResponse(htmlFile domain.File) {
 
 func (h *HTTPResponseHandler) ErrorResponse(err error, msg string) {
 	var (
-		statusCode int
-		logFunc    func(string, ...zap.Field)
+		statusCode    int
+		code          string
+		publicMessage string
+		logFunc       func(string, ...zap.Field)
 	)
 
 	switch {
 	case errors.Is(err, core_errors.ErrInvalidArgument):
 		statusCode = http.StatusBadRequest
+		code = errorCodeInvalidArgument
+		publicMessage = "invalid request"
 		logFunc = h.log.Warn
 
 	case errors.Is(err, core_errors.ErrNotFound):
 		statusCode = http.StatusNotFound
+		code = errorCodeNotFound
+		publicMessage = "resource not found"
 		logFunc = h.log.Debug
 
 	case errors.Is(err, core_errors.ErrConflict):
 		statusCode = http.StatusConflict
+		code = errorCodeConflict
+		publicMessage = "resource conflict"
 		logFunc = h.log.Warn
 
 	default:
 		statusCode = http.StatusInternalServerError
+		code = errorCodeInternal
+		publicMessage = "internal server error"
 		logFunc = h.log.Warn
 	}
 
 	logFunc(msg, zap.Error(err))
-	h.errorResponse(statusCode, err, msg)
+	h.errorResponse(statusCode, code, publicMessage)
 }
 
 func (h *HTTPResponseHandler) PanicResponse(p any, msg string) {
 	statusCode := http.StatusInternalServerError
-	err := fmt.Errorf("unexpected panic: %v", p)
 
-	h.log.Error(msg, zap.Error(err))
-	h.errorResponse(statusCode, err, msg)
+	h.log.Error(msg, zap.Any("panic", p))
+	h.errorResponse(statusCode, errorCodeInternal, "internal server error")
 }
 
-func (h *HTTPResponseHandler) errorResponse(statusCode int, err error, msg string) {
+func (h *HTTPResponseHandler) errorResponse(statusCode int, code string, msg string) {
 	response := ErrorResponse{
-		Error:   err.Error(),
+		Code:    code,
 		Message: msg,
 	}
 

@@ -29,6 +29,7 @@ type PatchTaskResponse TaskDTOResponse
 // @Success 200 {object} PatchTaskResponse "Task updated successfully"
 // @Failure 400 {object} core_http_response.ErrorResponse "Invalid request body or validation error"
 // @Failure 404 {object} core_http_response.ErrorResponse "Task not found"
+// @Failure 409 {object} core_http_response.ErrorResponse "Task update conflict"
 // @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
 // @Router /tasks/{id} [patch]
 func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +37,7 @@ func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
-	taskID, err := core_http_request.GetIntPathValue(r, "id")
+	taskID, err := core_http_request.GetPositiveIntPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to get taskId path value")
 		return
