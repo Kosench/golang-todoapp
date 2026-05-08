@@ -567,7 +567,7 @@ const docTemplate = `{
         "github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse": {
             "type": "object",
             "properties": {
-                "error": {
+                "code": {
                     "type": "string"
                 },
                 "message": {

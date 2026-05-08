@@ -2,7 +2,7 @@ basePath: /api/v1
 definitions:
   github_com_Kosench_golang-todoapp_internal_core_transport_http_response.ErrorResponse:
     properties:
-      error:
+      code:
         type: string
       message:
         type: string

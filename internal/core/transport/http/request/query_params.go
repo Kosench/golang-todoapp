@@ -29,6 +29,26 @@ func GetIntQueryParam(r *http.Request, key string) (*int, error) {
 	return &val, nil
 }
 
+func GetPositiveIntQueryParam(r *http.Request, key string) (*int, error) {
+	val, err := GetIntQueryParam(r, key)
+	if err != nil {
+		return nil, err
+	}
+	if val == nil {
+		return nil, nil
+	}
+
+	if *val <= 0 {
+		return nil, fmt.Errorf(
+			"param by key='%s' must be positive: %w",
+			key,
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	return val, nil
+}
+
 func GetDateQueryParams(r *http.Request, key string) (*time.Time, error) {
 	param := r.URL.Query().Get(key)
 	if param == "" {

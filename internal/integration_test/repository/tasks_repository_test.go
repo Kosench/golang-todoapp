@@ -229,6 +229,21 @@ func TestTasksRepository_PatchTask_Conflict(t *testing.T) {
 	}
 }
 
+func TestTasksRepository_PatchTask_NotFound(t *testing.T) {
+	cleanup(t)
+
+	ctx := context.Background()
+	author := createUser(t, ctx, "Task Author")
+	repo := tasks_postgres_repository.NewTasksRepository(pool)
+
+	task := domain.NewTask(missingID, 1, "Missing task", nil, false, fixedTime(), nil, author.ID)
+
+	_, err := repo.PatchTask(ctx, missingID, task)
+	if !errors.Is(err, core_errors.ErrNotFound) {
+		t.Fatalf("error = %v, want ErrNotFound", err)
+	}
+}
+
 func TestTasksRepository_DeleteTask(t *testing.T) {
 	cleanup(t)
 
